@@ -6,10 +6,10 @@ WoW Chat Voice reads World of Warcraft chat aloud (WoW Forever, Russian client),
 
 ## Commands
 
-Tools come from mise: `.mise.toml` pins Python, uv and LuaJIT; `companion/requirements-dev.txt` pins the test/icon libraries. `mise install` once, then:
+Tools come from mise: `.mise.toml` pins Python, uv and LuaJIT, points uv at mise's Python (`UV_PYTHON`) and lets mise create and activate `.venv` from the uv project (`python.uv_venv_auto`); the test/icon libraries are the `dev` group of `pyproject.toml`, locked in `uv.lock`. `mise install` once, then:
 
 - `mise run test` — every test: Python (numpy, pymorphy3, num2words installed, so nothing is skipped) and Lua
-- `mise run test-py` / `mise run test-lua` — one side only; a single Python test: `mise exec -- uv run --no-project --with-requirements companion/requirements-dev.txt python -m unittest discover -s companion/tests -k NumberAgreement`
+- `mise run test-py` / `mise run test-lua` — one side only; a single Python test: `mise exec -- uv run --locked python -m unittest discover -s companion/tests -k NumberAgreement`
 - `mise run icon` — regenerate `addon/WowChatVoice/Icon.tga` (and `tools/icon_preview.png`) from `tools/make_icon.py`
 - The Lua tests `loadfile` the addon's files by relative path, so `test-lua` runs in `addon/WowChatVoice`; `test_protocol.py` runs the addon's `Protocol.lua` encoder with `luajit`.
 - The companion runs only on Windows (`companion/WowChatVoice.cmd` makes `.venv`, installs `requirements.txt` and `requirements-f5.txt`, runs `python -m wcv`; `--selftest` / `--selftest-f5` render test audio to files). Development happens on macOS; testing is on a Windows machine with the game, over SSH: copy `addon/WowChatVoice/*` (except `VoiceList.lua`, which the companion writes) into the client's `Interface\AddOns\WowChatVoice\` and `companion/wcv/*.py` into the program's folder; the addon picks changes up on `/reload`, the program on restart. Screen capture can only be tested in the user's desktop session, never from SSH. Never launch or kill the game while someone plays.
@@ -27,7 +27,8 @@ Tools come from mise: `.mise.toml` pins Python, uv and LuaJIT; `companion/requir
 
 - Commit messages: no Claude/AI attribution footer. Commits use the repo's git identity (Roman Geraskin; the e-mail stays out of the files). Commit only when asked.
 - Default branch is `master`.
-- Tools through mise only: pin exact versions in `.mise.toml` (and exact library versions in `companion/requirements-dev.txt`), run tests and scripts as mise tasks (add a task for a new script); no system Python, Homebrew LuaJIT or unpinned `uv run --with`. The companion's runtime on the player's machine is separate: `WowChatVoice.cmd` + `requirements*.txt`.
+- Tools through mise only: exact versions in `.mise.toml`; Python libraries for development in the `dev` group of `pyproject.toml` (exact versions; `uv add --group dev <pkg>==<ver>` updates `uv.lock`, commit both); tests and scripts run as mise tasks (`uv run --locked …`; add a task for a new script). No system Python, Homebrew LuaJIT, `pip install` or ad-hoc `uv run --with`. The companion's runtime on the player's machine is separate: `WowChatVoice.cmd` + `companion/requirements*.txt`.
+- Amending: a commit not pushed yet may be amended when that is the sensible thing (a fix-up of the same change, a forgotten file); a pushed commit is not rewritten — fix it with a new commit.
 - Name: the display name is "WoW Chat Voice" (addon title, UI, docs); the addon folder and identifiers stay `WowChatVoice` (`WowChatVoiceDB` is tied to the folder name: renaming it would reset players' settings).
 - Markdown: no hard line wraps. A paragraph or list item is one line; the renderer wraps long lines.
 - No local identifiers in the repo: machine names, local paths, account or character names (examples use made-up or lore names).

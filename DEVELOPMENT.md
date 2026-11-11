@@ -91,7 +91,7 @@
 
 ## Инструменты и тесты
 
-Инструменты разработки — через [mise](https://mise.jdx.dev/): `.mise.toml` закрепляет точные версии Python, uv и LuaJIT, `companion/requirements-dev.txt` — библиотеки для тестов и значка. После клонирования: `mise install`. Задачи (`mise tasks`):
+Инструменты разработки — через [mise](https://mise.jdx.dev/): `.mise.toml` закрепляет точные версии Python, uv и LuaJIT. Библиотеки для тестов и значка — группа `dev` в `pyproject.toml` (проект uv без пакета: версия аддона только в `.toc`), точные версии — в `uv.lock`. По [рекомендации mise для uv](https://mise.jdx.dev/lang/python.html) uv берёт Python из mise (`UV_PYTHON`), а `.venv` mise создаёт через uv и активирует сам (`python.uv_venv_auto`). После клонирования: `mise install`. Задачи (`mise tasks`):
 
 - `mise run test` — все тесты: Python (с numpy, pymorphy3, num2words — ни один не пропускается) и Lua;
 - `mise run test-py`, `mise run test-lua` — по отдельности;

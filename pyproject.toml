@@ -1,0 +1,12 @@
+# The development environment only (tests, tools/make_icon.py), managed by uv through mise; not a
+# package, so no [project] (the version lives in addon/WowChatVoice/WowChatVoice.toc). The companion
+# on the player's Windows machine installs from companion/requirements*.txt instead.
+
+[dependency-groups]
+dev = [
+    "numpy==2.2.6",
+    "pymorphy3==2.0.6",
+    "pymorphy3-dicts-ru==2.4.417150.4580142",
+    "num2words==0.5.14",
+    "pillow==12.3.0",
+]
