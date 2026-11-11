@@ -1,5 +1,5 @@
 -- The dictionary's layers (Dictionary.lua): the default plus the player's edits.
--- Run from addon/WowChatVoice: luajit ../../companion/tests/dictionary_layers.lua
+-- Run: mise run test-lua (from addon/WowChatVoice, it loadfiles the addon by relative path)
 local ns = { db = {} }
 assert(loadfile("Protocol.lua"))("WowChatVoice", ns)
 assert(loadfile("Dictionary.lua"))("WowChatVoice", ns)

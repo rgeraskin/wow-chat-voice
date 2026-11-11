@@ -1,6 +1,6 @@
 """Draws the addon icon: a golden speech bubble with sound waves on a dark arcane background.
 Writes addon/WowChatVoice/Icon.tga (64x64, what the game reads) and tools/icon_preview.png.
-Run: uv run --with pillow python tools/make_icon.py"""
+Run: mise run icon"""
 import math
 from pathlib import Path
 
