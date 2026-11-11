@@ -1,0 +1,11 @@
+# the program's own files, made next to it on the user's machine
+.venv/
+config.json
+logs/
+tmp/
+voices/
+assignments.json
+.models_ready
+
+__pycache__/
+.DS_Store

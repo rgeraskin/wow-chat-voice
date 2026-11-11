@@ -1,0 +1,10 @@
+mss>=9
+pywin32>=306
+numpy
+ruaccent
+onnxruntime
+num2words
+pymorphy3
+pymorphy3-dicts-ru
+windows-capture
+praat-parselmouth
