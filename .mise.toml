@@ -1,0 +1,28 @@
+[tools]
+python = "3.13.18"
+uv = "0.13.7"
+luajit = "2.1.1744318430"
+
+[env]
+# uv runs the tasks on mise's Python above, not on one of its own
+UV_PYTHON_PREFERENCE = "only-system"
+
+[tasks.test]
+description = "All tests: Python (with the optional libraries) and Lua"
+depends = ["test-py", "test-lua"]
+
+[tasks.test-py]
+description = "Python tests; the protocol test runs the addon's encoder with luajit"
+run = "uv run --no-project --with-requirements companion/requirements-dev.txt python -m unittest discover -s companion/tests"
+
+[tasks.test-lua]
+description = "Addon tests on WoW API stubs: windows, payloads, visible-chat filter, dictionary layers"
+dir = "addon/WowChatVoice"
+run = [
+  "luajit ../../companion/tests/ui_mock.lua",
+  "luajit ../../companion/tests/dictionary_layers.lua",
+]
+
+[tasks.icon]
+description = "Redraw addon/WowChatVoice/Icon.tga and tools/icon_preview.png"
+run = "uv run --no-project --with-requirements companion/requirements-dev.txt python tools/make_icon.py"

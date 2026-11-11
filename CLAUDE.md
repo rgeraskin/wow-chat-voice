@@ -6,9 +6,12 @@ WoW Chat Voice reads World of Warcraft chat aloud (WoW Forever, Russian client),
 
 ## Commands
 
-- Python tests (from the repo root): `python3 -m unittest discover -s companion/tests`. Tests needing numpy, pymorphy3 or num2words skip without them; to run everything: `uv run --with numpy --with pymorphy3 --with pymorphy3-dicts-ru --with num2words python -m unittest discover -s companion/tests` (run from `companion/` for a dotted single test: `python3 -m unittest tests.test_logic.NumberAgreement`).
-- Lua tests, from `addon/WowChatVoice` (they `loadfile` the addon's files by relative path): `luajit ../../companion/tests/ui_mock.lua` (every window on WoW API stubs, strip payloads, visible-chat filter) and `luajit ../../companion/tests/dictionary_layers.lua` (dictionary layers). `test_protocol.py` also needs `luajit` on PATH (it encodes with the addon's `Protocol.lua`) and skips without it.
-- Icon: `uv run --with pillow tools/make_icon.py` regenerates `addon/WowChatVoice/Icon.tga`.
+Tools come from mise: `.mise.toml` pins Python, uv and LuaJIT; `companion/requirements-dev.txt` pins the test/icon libraries. `mise install` once, then:
+
+- `mise run test` — every test: Python (numpy, pymorphy3, num2words installed, so nothing is skipped) and Lua
+- `mise run test-py` / `mise run test-lua` — one side only; a single Python test: `mise exec -- uv run --no-project --with-requirements companion/requirements-dev.txt python -m unittest discover -s companion/tests -k NumberAgreement`
+- `mise run icon` — regenerate `addon/WowChatVoice/Icon.tga` (and `tools/icon_preview.png`) from `tools/make_icon.py`
+- The Lua tests `loadfile` the addon's files by relative path, so `test-lua` runs in `addon/WowChatVoice`; `test_protocol.py` runs the addon's `Protocol.lua` encoder with `luajit`.
 - The companion runs only on Windows (`companion/WowChatVoice.cmd` makes `.venv`, installs `requirements.txt` and `requirements-f5.txt`, runs `python -m wcv`; `--selftest` / `--selftest-f5` render test audio to files). Development happens on macOS; testing is on a Windows machine with the game, over SSH: copy `addon/WowChatVoice/*` (except `VoiceList.lua`, which the companion writes) into the client's `Interface\AddOns\WowChatVoice\` and `companion/wcv/*.py` into the program's folder; the addon picks changes up on `/reload`, the program on restart. Screen capture can only be tested in the user's desktop session, never from SSH. Never launch or kill the game while someone plays.
 
 ## Architecture
@@ -24,6 +27,7 @@ WoW Chat Voice reads World of Warcraft chat aloud (WoW Forever, Russian client),
 
 - Commit messages: no Claude/AI attribution footer. Commits use the repo's git identity (Roman Geraskin; the e-mail stays out of the files). Commit only when asked.
 - Default branch is `master`.
+- Tools through mise only: pin exact versions in `.mise.toml` (and exact library versions in `companion/requirements-dev.txt`), run tests and scripts as mise tasks (add a task for a new script); no system Python, Homebrew LuaJIT or unpinned `uv run --with`. The companion's runtime on the player's machine is separate: `WowChatVoice.cmd` + `requirements*.txt`.
 - Name: the display name is "WoW Chat Voice" (addon title, UI, docs); the addon folder and identifiers stay `WowChatVoice` (`WowChatVoiceDB` is tied to the folder name: renaming it would reset players' settings).
 - Markdown: no hard line wraps. A paragraph or list item is one line; the renderer wraps long lines.
 - No local identifiers in the repo: machine names, local paths, account or character names (examples use made-up or lore names).

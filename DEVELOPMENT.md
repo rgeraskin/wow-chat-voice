@@ -17,7 +17,7 @@
   - `Core.lua` — события чата, проверка «видно в окнах чата», сбор строки (`ns.Send`), управляющие кадры, передача регулярок, `/wcv`.
   - `UI.lua`, `Options.lua`, `DictionaryWindow.lua`, `VoicesWindow.lua`, `Minimap.lua` — окна и значок.
   - `VoiceList.lua` — список голосов Windows; пишет программа (в репозитории — пустая заготовка).
-  - `Icon.tga` — рисует `tools/make_icon.py` (`uv run --with pillow tools/make_icon.py`).
+  - `Icon.tga` — рисует `tools/make_icon.py` (`mise run icon`).
 - `companion/` — программа для Windows (Python), пакет `wcv`, запуск `WowChatVoice.cmd` (создаёт `.venv`, ставит `requirements.txt` и `requirements-f5.txt`).
   - `__main__.py` — настройки по умолчанию (`DEFAULT_CONFIG`, дописываются в `config.json`), журнал, главный цикл: снимок → декодирование → разбор → текст → движок.
   - `window.py`, `capture.py` — окно WoW и его снимок; `protocol.py` — декодер полоски и разбор строки.
@@ -89,15 +89,18 @@
 - Windows Graphics Capture (`windows-capture`) по окну игры: работает, когда окно закрыто другими; смещение клиентской области — через `DwmGetWindowAttribute`. Без него — снимок экрана `mss` (игра должна быть сверху). Свёрнутую игру не видит ни один способ.
 - Проверять захват можно только в сессии пользователя: из SSH снимок экрана запрещён и окон нет.
 
-## Тесты
+## Инструменты и тесты
 
-```
-python3 -m unittest discover -s companion/tests
-cd addon/WowChatVoice && luajit ../../companion/tests/ui_mock.lua && luajit ../../companion/tests/dictionary_layers.lua
-```
+Инструменты разработки — через [mise](https://mise.jdx.dev/): `.mise.toml` закрепляет точные версии Python, uv и LuaJIT, `companion/requirements-dev.txt` — библиотеки для тестов и значка. После клонирования: `mise install`. Задачи (`mise tasks`):
+
+- `mise run test` — все тесты: Python (с numpy, pymorphy3, num2words — ни один не пропускается) и Lua;
+- `mise run test-py`, `mise run test-lua` — по отдельности;
+- `mise run icon` — перерисовать `Icon.tga` и `tools/icon_preview.png`.
+
+Программе у игрока mise не нужен: на Windows её ставит и запускает `WowChatVoice.cmd`.
 
 - `test_protocol.py` — кодировщик аддона (через LuaJIT) → отрисованная полоса (гамма, шум, ячейки 1–4 px, два ряда, полоса справа, перекрытая полоса) → декодер программы.
-- `test_logic.py` — ударения, распределение голосов, разбор строки, регулярки, громкость, ограничитель, вопросы, согласование чисел; `test_morph.py` — склонение; `test_engines.py` — выбор движка. Тесты с numpy, pymorphy3 и num2words пропускаются без них: `uv run --with numpy --with pymorphy3 --with pymorphy3-dicts-ru --with num2words python -m unittest discover -s companion/tests`.
+- `test_logic.py` — ударения, распределение голосов, разбор строки, регулярки, громкость, ограничитель, вопросы, согласование чисел; `test_morph.py` — склонение; `test_engines.py` — выбор движка. Без numpy, pymorphy3 и num2words часть тестов пропускается — поэтому запускать через `mise run`.
 - `ui_mock.lua` — все окна аддона на заглушках WoW API, строки полоски, чтение только видимого в окнах чата, настройки переживают открытие окна.
 - `dictionary_layers.lua` — слои словаря: ключи, правки, удаления, новый стандарт, переименование шаблона.
 
